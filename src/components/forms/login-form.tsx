@@ -4,14 +4,21 @@ import { useForm } from "@tanstack/react-form";
 import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "../ui/field";
 import { loginZodSchema } from "@/validations";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
-import { useLogin } from "@/hooks";
+import { useGoogleOAuth, useLogin } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/toast";
 import { Spinner } from "@/components/ui/spinner";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -50,8 +57,52 @@ const LoginForm = () => {
       onSubmit: loginZodSchema,
     },
   });
+
+  const { mutate: googleLogin, isPending: isGoogleLoginPending } =
+    useGoogleOAuth();
+
+  const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
+    const idToken = credentialResponse.credential;
+    if (!idToken) {
+      toast.add({
+        title: "Google Login Failed",
+        description: "Unable to login with Google. Please try again.",
+        type: "error",
+      });
+      return;
+    }
+
+    googleLogin(
+      { idToken },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: "Google Login Successful",
+            description: "You have been logged in successfully.",
+            type: "success",
+          });
+          router.push("/");
+        },
+        onError: (err) => {
+          toast.add({
+            title: "Google Login Failed",
+            description:
+              err.message || "Unable to login with Google. Please try again.",
+            type: "error",
+          });
+        },
+      },
+    );
+  };
+  const handleGoogleLoginError = () => {
+    toast.add({
+      title: "Google Login Failed",
+      description: "Unable to login with Google. Please try again.",
+      type: "error",
+    });
+  };
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md flex flex-col gap-6 rounded-lg border bg-background p-6 shadow-sm">
       {/* Header */}
       <div className="mb-8">
         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-2">
@@ -171,6 +222,18 @@ const LoginForm = () => {
           </Button>
         </FieldGroup>
       </form>
+      <FieldSeparator>Or continue with</FieldSeparator>
+      <GoogleLogin
+        theme="outline"
+        shape="rectangular"
+        size="large"
+        width="100%"
+        text="continue_with"
+        useOneTap
+        type="standard"
+        onSuccess={handleGoogleLoginSuccess}
+        onError={handleGoogleLoginError}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { getMyProfile, logout, userLogin } from "@/api";
+import { getMyProfile, googleOAuth, logout, userLogin } from "@/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useLogin = () => {
@@ -9,6 +9,11 @@ export const useLogin = () => {
 export const useLogout = () => {
   return useMutation({
     mutationFn: logout,
+  });
+};
+export const useGoogleOAuth = () => {
+  return useMutation({
+    mutationFn: googleOAuth,
   });
 };
 export const useGetMyProfile = () => {
