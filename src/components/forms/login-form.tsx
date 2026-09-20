@@ -8,16 +8,43 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { loginZodSchema } from "@/validations";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
+import { useLogin } from "@/hooks";
+import { useRouter } from "next/navigation";
+import { toast } from "../ui/toast";
+import { Spinner } from "@/components/ui/spinner";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const { mutate: userLogin, isPending: isLoginPending } = useLogin();
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "superadmin@gmail.com",
+      password: "superadmin123aA@",
     },
     onSubmit: ({ value }) => {
-      console.log(value);
+      const loginData = {
+        email: value.email,
+        password: value.password,
+      };
+      userLogin(loginData, {
+        onSuccess: (res) => {
+          toast.add({
+            title: "Login Successful",
+            description: "You have been logged in successfully.",
+            type: "success",
+          });
+          router.push("/");
+        },
+        onError: (err) => {
+          toast.add({
+            title: "Login Failed",
+            description: "Invalid email or password.",
+            type: "error",
+          });
+        },
+      });
     },
     validators: {
       onSubmit: loginZodSchema,
@@ -66,6 +93,7 @@ const LoginForm = () => {
                   <Input
                     id={field.name}
                     name={field.name}
+                    type="email"
                     placeholder="you@example.com"
                     onChange={(e) => field.handleChange(e.target.value)}
                     value={field.state.value}
@@ -128,10 +156,18 @@ const LoginForm = () => {
             }}
           </form.Field>
           <Button
+            disabled={isLoginPending}
             type="submit"
             className="mt-2 h-11 w-full text-base font-semibold"
           >
-            Sign in
+            {isLoginPending ? (
+              <>
+                <Spinner />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
           </Button>
         </FieldGroup>
       </form>
