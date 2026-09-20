@@ -5,31 +5,39 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <Link href="/" className="flex items-center gap-2 font-medium">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            MedConnect
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <LoginForm />
+    <div className="grid h-svh lg:grid-cols-[1fr_1.1fr]">
+      {/* Left — form panel */}
+      <div className="flex flex-col h-full px-8 py-8 md:px-16">
+        <Link href="/" className="flex items-center gap-2 font-semibold text-primary">
+          <div className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <GalleryVerticalEnd className="size-4" />
           </div>
+          MedConnect
+        </Link>
+        <div className="flex flex-1 items-center justify-center">
+          <LoginForm />
         </div>
+        <p className="text-center text-xs text-muted-foreground">
+          © {new Date().getFullYear()} MedConnect. All rights reserved.
+        </p>
       </div>
-      <div className="relative hidden bg-muted lg:block">
+      {/* Right — image panel */}
+      <div className="relative hidden lg:block">
         <Image
-          height={1000}
-          width={800}
-          objectFit="cover"
-          src="/login.jpg"
-          alt="Image"
-          className="inset-0 dark:brightness-[0.2] dark:grayscale"
+          fill
+          src="/login.png"
+          alt="Login visual"
+          className="object-cover object-top dark:brightness-[0.2] dark:grayscale"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        <div className="absolute bottom-10 left-8 right-8 text-white">
+          <p className="text-2xl font-semibold leading-snug">
+            Your health, managed smarter.
+          </p>
+          <p className="mt-2 text-sm text-white/70">
+            Connect with top doctors and manage your care — all in one place.
+          </p>
+        </div>
       </div>
     </div>
   );
