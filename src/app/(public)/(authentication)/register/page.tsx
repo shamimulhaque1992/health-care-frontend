@@ -1,4 +1,5 @@
 import LoginForm from "@/components/forms/login-form";
+import RegisterForm from "@/components/forms/register-form";
 import { GalleryVerticalEnd } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,7 +16,7 @@ export default function RegisterPage() {
           MedConnect
         </Link>
         <div className="flex flex-1 items-center justify-center">
-          {/* <RegisterForm /> */}
+          <RegisterForm />
         </div>
         <p className="text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} MedConnect. All rights reserved.

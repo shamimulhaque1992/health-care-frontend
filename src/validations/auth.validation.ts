@@ -37,9 +37,5 @@ export const patientRegistrationSchema = z.object({
     .regex(/[0-9]/, "Password must contain atleast 1 Number")
     .regex(/[^A-Za-z0-9]/, "Password must contain atleast 1 Special Character")
     .trim(),
-  patient: z
-    .object({
-      contactNumber: z.string().optional(),
-    })
-    .optional(),
+  contactNumber: z.string().optional(),
 });

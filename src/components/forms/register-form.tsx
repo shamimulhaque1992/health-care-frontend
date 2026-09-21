@@ -19,20 +19,27 @@ import { useRouter } from "next/navigation";
 import { toast } from "../ui/toast";
 import { Spinner } from "@/components/ui/spinner";
 import GoogleLoginComponent from "../modules/google-login/GoogleLoginComponent";
+import z from "zod";
 
 const RegisterForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    mainPassword: false,
+    confirmPassword: false,
+  });
   const router = useRouter();
+
+  type PatientDefaultValues = z.infer<typeof patientRegistrationSchema>;
+  const defaultValues: PatientDefaultValues = {
+    name: "shamim",
+    email: "superadmin@gmail.com",
+    contactNumber: "01779312970",
+    password: "superadmin123aA@",
+    confirmPassword: "superadmin123aA@",
+  };
 
   const { mutate: userLogin, isPending: isLoginPending } = useLogin();
   const form = useForm({
-    defaultValues: {
-      name: "shamim",
-      email: "superadmin@gmail.com",
-      contactNumber: "01779312970",
-      password: "superadmin123aA@",
-      confirmPassword: "superadmin123aA@",
-    },
+    defaultValues,
     onSubmit: ({ value }) => {
       const loginData = {
         name: value.name,
@@ -66,22 +73,23 @@ const RegisterForm = () => {
   });
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-6 rounded-lg border bg-background p-6 shadow-sm">
+    <div className="w-full max-w-md flex flex-col gap-2 rounded-lg border bg-background p-6 shadow-sm">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-4">
         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-2">
-          Welcome back
+          Welcome to MedConnect
         </p>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Sign in to your account
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
         <p className="mt-2 text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          Get started with your health journey
+        </p>
+        <p className="mt-2 text-muted-foreground">
+          Already have an account?{" "}
           <Link
-            href="/register"
+            href="/login"
             className="text-primary font-medium hover:underline underline-offset-4"
           >
-            Create one
+            Login
           </Link>
         </p>
       </div>
@@ -108,14 +116,14 @@ const RegisterForm = () => {
                   <Input
                     id={field.name}
                     name={field.name}
-                    type="email"
+                    type="text"
                     placeholder="Khandoker shamimul haque"
                     onChange={(e) => field.handleChange(e.target.value)}
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     autoComplete="off"
                     aria-invalid={isInvalid}
-                    className="h-11 text-base"
+                    className="h-9 text-base"
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -144,7 +152,7 @@ const RegisterForm = () => {
                     onBlur={field.handleBlur}
                     autoComplete="off"
                     aria-invalid={isInvalid}
-                    className="h-11 text-base"
+                    className="h-9 text-base"
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -161,19 +169,19 @@ const RegisterForm = () => {
                     htmlFor={field.name}
                     className="text-sm font-medium"
                   >
-                    Email address
+                    Contact number
                   </FieldLabel>
                   <Input
                     id={field.name}
                     name={field.name}
-                    type="email"
+                    type="tel"
                     placeholder="+008 1779312970"
                     onChange={(e) => field.handleChange(e.target.value)}
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     autoComplete="off"
                     aria-invalid={isInvalid}
-                    className="h-11 text-base"
+                    className="h-9 text-base"
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -193,34 +201,33 @@ const RegisterForm = () => {
                     >
                       Password
                     </FieldLabel>
-                    <Link
-                      href="#"
-                      className="text-xs text-primary hover:underline underline-offset-4"
-                    >
-                      Forgot password?
-                    </Link>
                   </div>
                   <div className="relative">
                     <Input
                       id={field.name}
                       name={field.name}
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword.mainPassword ? "text" : "password"}
                       placeholder="••••••••"
                       onChange={(e) => field.handleChange(e.target.value)}
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       autoComplete="off"
                       aria-invalid={isInvalid}
-                      className="h-11 pr-10 text-base"
+                      className="h-9 pr-10 text-base"
                     />
                     <Button
                       className="absolute right-1 top-0 bottom-0 my-auto text-muted-foreground hover:text-foreground"
                       type="button"
                       variant="ghost"
                       size="icon-sm"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      onClick={() =>
+                        setShowPassword((prev) => ({
+                          ...prev,
+                          mainPassword: !prev.mainPassword,
+                        }))
+                      }
                     >
-                      {showPassword ? <EyeClosed /> : <Eye />}
+                      {showPassword.mainPassword ? <EyeClosed /> : <Eye />}
                     </Button>
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -247,23 +254,28 @@ const RegisterForm = () => {
                     <Input
                       id={field.name}
                       name={field.name}
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword.confirmPassword ? "text" : "password"}
                       placeholder="••••••••"
                       onChange={(e) => field.handleChange(e.target.value)}
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       autoComplete="off"
                       aria-invalid={isInvalid}
-                      className="h-11 pr-10 text-base"
+                      className="h-9 pr-10 text-base"
                     />
                     <Button
                       className="absolute right-1 top-0 bottom-0 my-auto text-muted-foreground hover:text-foreground"
                       type="button"
                       variant="ghost"
                       size="icon-sm"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      onClick={() =>
+                        setShowPassword((prev) => ({
+                          ...prev,
+                          confirmPassword: !prev.confirmPassword,
+                        }))
+                      }
                     >
-                      {showPassword ? <EyeClosed /> : <Eye />}
+                      {showPassword.confirmPassword ? <EyeClosed /> : <Eye />}
                     </Button>
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -274,7 +286,7 @@ const RegisterForm = () => {
           <Button
             disabled={isLoginPending}
             type="submit"
-            className="mt-2 h-11 w-full text-base font-semibold"
+            className="mt-2 h-9 w-full text-base font-semibold"
           >
             {isLoginPending ? (
               <>
@@ -287,8 +299,10 @@ const RegisterForm = () => {
           </Button>
         </FieldGroup>
       </form>
-      <FieldSeparator>Or continue with</FieldSeparator>
-      <GoogleLoginComponent />
+      <div className="flex flex-col gap-4 mt-2">
+        <FieldSeparator>Or continue with</FieldSeparator>
+        <GoogleLoginComponent />
+      </div>
     </div>
   );
 };

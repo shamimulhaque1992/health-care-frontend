@@ -51,8 +51,8 @@ const GoogleLoginComponent = () => {
   return (
     <GoogleLogin
       theme="outline"
-      shape="rectangular"
-      size="large"
+      shape="pill"
+      size="medium"
       width="100%"
       text="continue_with"
       type="standard"
