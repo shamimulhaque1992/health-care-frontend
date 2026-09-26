@@ -46,9 +46,10 @@ export const patientRegistrationSchema = z
       .trim(),
     contactNumber: z
       .string()
-      .regex(
-        /^(?:01[3-9]\d{8}|\+8801[3-9]\d{8})$/,
-        "Please provide valid bangladeshi phone number",
+      .refine(
+        (value) =>
+          value === "" || /^(?:01[3-9]\d{8}|\+8801[3-9]\d{8})$/.test(value),
+        { message: "Please provide valid bangladeshi phone number" },
       )
       .optional(),
   })

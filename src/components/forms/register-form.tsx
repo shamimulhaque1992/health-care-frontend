@@ -14,7 +14,7 @@ import {
 import { loginZodSchema, patientRegistrationSchema } from "@/validations";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
-import { useLogin } from "@/hooks";
+import { useRegistration } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/toast";
 import { Spinner } from "@/components/ui/spinner";
@@ -30,18 +30,19 @@ const RegisterForm = () => {
 
   type PatientDefaultValues = z.infer<typeof patientRegistrationSchema>;
   const defaultValues: PatientDefaultValues = {
-    name: "shamim",
-    email: "superadmin@gmail.com",
+    name: "kashfee",
+    email: "sdfs@yopmail.com",
     contactNumber: "01779312970",
     password: "superadmin123aA@",
     confirmPassword: "superadmin123aA@",
   };
 
-  const { mutate: userLogin, isPending: isLoginPending } = useLogin();
+  const { mutate: userRegistration, isPending: isRegistrationPending } =
+    useRegistration();
   const form = useForm({
     defaultValues,
     onSubmit: ({ value }) => {
-      const loginData = {
+      const registrationData = {
         name: value.name,
         email: value.email,
         patient: {
@@ -49,19 +50,27 @@ const RegisterForm = () => {
         },
         password: value.password,
       };
-      userLogin(loginData, {
+      userRegistration(registrationData, {
         onSuccess: (res) => {
+          if (!res.success) {
+            toast.add({
+              title: "Server Failure",
+              description: "Something went wrong. Please try again",
+              type: "error",
+            });
+          }
           toast.add({
-            title: "Login Successful",
-            description: "You have been logged in successfully.",
+            title: "Registration Application Submitted Successful",
+            description: "Check your email for verification link to verify your account.",
             type: "success",
           });
-          router.push("/");
+          const params = new URLSearchParams({ email: registrationData.email });
+          router.push(`/register/verify-account?${params.toString()}`);
         },
         onError: (err) => {
           toast.add({
-            title: "Login Failed",
-            description: "Invalid email or password.",
+            title: "Registration Failed",
+            description: "An error occurred while registering.",
             type: "error",
           });
         },
@@ -97,6 +106,7 @@ const RegisterForm = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           form.handleSubmit();
         }}
       >
@@ -284,17 +294,17 @@ const RegisterForm = () => {
             }}
           </form.Field>
           <Button
-            disabled={isLoginPending}
+            disabled={isRegistrationPending}
             type="submit"
             className="mt-2 h-9 w-full text-base font-semibold"
           >
-            {isLoginPending ? (
+            {isRegistrationPending ? (
               <>
                 <Spinner />
-                Signing in...
+                Submitting...
               </>
             ) : (
-              "Sign in"
+              "Register"
             )}
           </Button>
         </FieldGroup>
